@@ -1,6 +1,6 @@
 # pf_fwrule_toggle
 
-php helper script to toggle pfSense firewall rules on/off
+php helper script to toggle pfSense firewall rules on/off via CLI
 
 # setup
 
