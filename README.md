@@ -11,8 +11,19 @@ php helper script to toggle pfSense firewall rules on/off
 
 # example usage
 
+toggle rule 36
 ```
 php -q fwrule_toggle.php 36
+```
+
+turn rule 23 **on**
+```
+php -q fwrule_toggle.php 23 1
+```
+
+turn rule 5 **off**
+```
+php -q fwrule_toggle.php 5 0
 ```
 
 # based on
