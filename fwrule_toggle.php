@@ -31,8 +31,9 @@ switch ($s) {
     print('unknown');
 }
 
-write_config();
+$msg = "rule $id: $s";
+write_config($msg);
 filter_configure();
-print("rule $id: $s\n");
+print("$msg\n");
 
 ?>
