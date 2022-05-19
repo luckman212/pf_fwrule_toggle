@@ -11,13 +11,24 @@ global $config;
 parse_config(true);
 
 $id = intval($argv[1]) or exit("specify rule id\n");
+$force = $argv[2];
 $rule = &$config['filter']['rule'][$id];
-if (isset($rule['disabled'])) {
-  unset($rule['disabled']);
-  $s = 'enabled';
+
+if (isset($force)) {
+  $s = ($force ? 'enabled' : 'disabled');
 } else {
-  $rule['disabled'] = true;
-  $s = 'disabled';
+  $s = (isset($rule['disabled']) ? 'enabled' : 'disabled');
+}
+
+switch ($s) {
+  case 'enabled':
+    unset($rule['disabled']);
+    break;
+  case 'disabled':
+    $rule['disabled'] = true;
+    break;
+  default:
+    print('unknown');
 }
 
 write_config();
