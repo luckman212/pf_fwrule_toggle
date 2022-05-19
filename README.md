@@ -7,7 +7,8 @@ php helper script to toggle pfSense firewall rules on/off
 - copy the php script to your firewall with scp or whatever other method suits you
 - run it using the syntax below
 - you need to supply a rule id as a parameter
-- rules will be toggled on/off
+- optionally add a 0 or 1 to explicitly set a rule on/off
+- otherwise, rule status will be toggled
 
 # example usage
 
