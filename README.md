@@ -36,3 +36,4 @@ php -q fwrule_toggle.php 5 0
 
 - https://www.reddit.com/r/PFSENSE/comments/usdlaf/anybody_have_a_shell_script_to_disableenable_a/
 - https://forum.netgate.com/topic/51063/enable-disable-existing-rule-via-script/
+- https://forum.netgate.com/topic/172552/list-or-toggle-rules-on-off-via-cli
