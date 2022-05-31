@@ -1,16 +1,21 @@
 # pf_fwrule_toggle
 
-php helper script to toggle pfSense firewall rules on/off via CLI
+php helper script for pfSense that lists rules and toggles them on/off via CLI
 
 # setup
 
 - copy the php script to your firewall with scp or whatever other method suits you
 - run it using the syntax below
-- you need to supply a rule id as a parameter
+- you need to supply a rule id as a parameter, or `-l` to list all rules
 - optionally add a 0 or 1 to explicitly set a rule on/off
 - otherwise, rule status will be toggled
 
 # example usage
+
+list rules
+```
+php -q fwrule_toggle.php -l
+```
 
 toggle rule 36
 ```
