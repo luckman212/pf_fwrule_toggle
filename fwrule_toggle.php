@@ -10,7 +10,17 @@ require_once("filter.inc");
 global $config;
 parse_config(true);
 
-$id = intval($argv[1]) or exit("specify rule id\n");
+if ($argv[1] == '-l') {
+  $rules = $config['filter']['rule'];
+  printf("%4s %s %s\n", "ID", " ", "Interfaces/Description (*=disabled)");
+  foreach ($rules as $id => $rule) {
+    $stat = (isset($rule['disabled']) ? '*' : ' ');
+    printf("%4d %s %s (%s)\n", $id, $stat, $rule['interface'], $rule['descr']);
+  }
+  exit();
+}
+
+$id = intval($argv[1]) or exit("specify rule id, or -l to list rules\n");
 $force = $argv[2];
 $rule = &$config['filter']['rule'][$id];
 
