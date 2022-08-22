@@ -21,7 +21,10 @@ if ($argv[1] == '-l') {
   exit();
 }
 
-$id = intval($argv[1]) or exit("specify rule id, or -l to list rules\n");
+$id = $argv[1];
+if (!(ctype_digit($id)) || intval($id) < 0 ) {
+  exit("specify a numeric rule id, or -l to list rules\n");
+}
 $force = $argv[2];
 $rule = &$config['filter']['rule'][$id];
 
