@@ -3,7 +3,6 @@
 /** based on
   https://www.reddit.com/r/PFSENSE/comments/usdlaf/anybody_have_a_shell_script_to_disableenable_a/
   https://forum.netgate.com/topic/51063/enable-disable-existing-rule-via-script/
-  https://forum.netgate.com/topic/172552/list-or-toggle-rules-on-off-via-cli
 **/
 
 require_once("config.inc");
@@ -13,8 +12,14 @@ parse_config(true);
 
 if ($argv[1] == '-l') {
   $rules = $config['filter']['rule'];
-  printf("%4s %s %s\n", "ID", " ", "Interfaces/Description (*=disabled)");
+  $natrules = $config['nat']['rule'];
+  printf("[%s]\n", "Standard rules");
   foreach ($rules as $id => $rule) {
+    $stat = (isset($rule['disabled']) ? '*' : ' ');
+    printf("%4d %s %s (%s)\n", $id, $stat, $rule['interface'], $rule['descr']);
+  }
+  printf("[%s] (%s)\n", "NAT rules", "iface/desc, *=disabled");
+  foreach ($natrules as $id => $rule) {
     $stat = (isset($rule['disabled']) ? '*' : ' ');
     printf("%4d %s %s (%s)\n", $id, $stat, $rule['interface'], $rule['descr']);
   }
@@ -22,12 +27,17 @@ if ($argv[1] == '-l') {
 }
 
 $id = $argv[1];
-if (!(ctype_digit($id)) || intval($id) < 0 ) {
-  exit("specify a numeric rule id, or -l to list rules\n");
+if (strpos($id, 'n') === 0) {
+  $rtype = 'nat';
+  $id = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
+} else {
+  $rtype = 'filter';
 }
+if ( !(ctype_digit($id)) || intval($id) < 0 ) {
+  exit("specify a rule id (use e.g. `n3` for NAT rule) or -l to list rules\n");
+}
+$rule = &$config[$rtype]['rule'][$id];
 $force = $argv[2];
-$rule = &$config['filter']['rule'][$id];
-
 if (isset($force)) {
   $s = ($force ? 'enabled' : 'disabled');
 } else {
@@ -45,7 +55,7 @@ switch ($s) {
     print('unknown');
 }
 
-$msg = "rule $id: $s";
+$msg = "$rtype rule $id: $s";
 write_config($msg);
 filter_configure();
 print("$msg\n");
