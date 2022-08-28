@@ -4,18 +4,15 @@ Helper script for pfSense that lists rules and toggles them on/off via CLI. The 
 
 # Setup
 
-- copy the php script to your firewall with scp or whatever other method suits you
+- copy the php script to your firewall—one easy way to do this is to ssh to your firewall, choose option 8 and then paste this command:
+```
+fetch https://raw.githubusercontent.com/luckman212/pf_fwrule_toggle/main/fwrule_toggle.php
+```
 - run it using the syntax below
 - you need to supply one or more rule ids as a parameter, or `-l` to list all rules
 - prefixing the ruleIDs with `n` e.g. `n3` will operate on NAT rule #3
-- optionally set the action to `enable`, `disable`, or `toggle` (default=`toggle`)
-- if action is not specified, it defaults to `toggle`
-- you can use the following long args instead, if you prefer:
-```
--l or --list
--d or --desc
--h or --help
-```
+- optionally set the action to `enable`, `disable`, or `toggle` (if not specified, it defaults to `toggle`)
+- you can use the following long args instead, if you prefer: `--list`, `--desc`, `--help`
 
 # Usage
 
