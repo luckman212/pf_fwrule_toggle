@@ -13,11 +13,10 @@ $dids = array();
 $iids = array();
 
 function show_help() {
-  $fname = basename(__FILE__);
   $helptext = sprintf('usage:' . "\n" .
     '  php -q %1$s <ruleid>[,ruleid...] [enable|disable|toggle]' . "\n" .
     '  php -q %1$s -d <rule_desc> <nat|filter> [enable|disable|toggle]' . "\n",
-    $fname
+    basename(__FILE__)
   );
   print($helptext);
   exit();
