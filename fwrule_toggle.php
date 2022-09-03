@@ -66,7 +66,7 @@ function process_all_rules($rule_ids, $action) {
 function process_rule($oid, $action) {
   global $config, $eids, $dids, $iids;
   $oid = trim($oid);
-  if (empty($oid)) {
+  if (strlen($oid) == 0) {
     return false;
   }
   if (!isset($action)) {
@@ -111,7 +111,7 @@ switch ($argv[1]) {
   case '-d':
   case '--desc':
     $desc = trim($argv[2]);
-    if (empty($desc)) {
+    if (strlen($desc) == 0) {
       print("description cannot be blank\n");
       show_help();
     }
@@ -147,7 +147,7 @@ switch ($argv[1]) {
   case '--help':
     show_help();
   default:
-    if (empty($argv[1])) {
+    if (strlen($argv[1]) == 0) {
       show_help();
     }
     $rule_ids = explode(',', $argv[1]);
