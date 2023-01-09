@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 
 /** based on
@@ -15,10 +16,10 @@ $iids = array();
 function show_help() {
   $helptext = sprintf('usage:' . "\n" .
     'list rules:' . "\n" .
-    '  php -q %1$s -l' . "\n" .
+    '  %1$s -l' . "\n" .
     'modify rules:' . "\n" .
-    '  php -q %1$s <ruleid>[,ruleid...] [enable|disable|toggle]' . "\n" .
-    '  php -q %1$s -d <rule_desc> <nat|filter> [enable|disable|toggle]' . "\n",
+    '  %1$s <ruleid>[,ruleid...] [enable|disable|toggle]' . "\n" .
+    '  %1$s -d <rule_desc> <nat|filter> [enable|disable|toggle]' . "\n",
     basename(__FILE__)
   );
   print($helptext);
