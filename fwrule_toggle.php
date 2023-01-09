@@ -1,10 +1,10 @@
 #!/usr/bin/env php
 <?php
 
-/** based on
+/* based on
   https://www.reddit.com/r/PFSENSE/comments/usdlaf/anybody_have_a_shell_script_to_disableenable_a/
   https://forum.netgate.com/topic/51063/enable-disable-existing-rule-via-script/
-**/
+*/
 
 require_once("config.inc");
 require_once("filter.inc");
@@ -14,12 +14,11 @@ $dids = array();
 $iids = array();
 
 function show_help() {
-  $helptext = sprintf('usage:' . "\n" .
-    'list rules:' . "\n" .
-    '  %1$s -l' . "\n" .
-    'modify rules:' . "\n" .
-    '  %1$s <ruleid>[,ruleid...] [enable|disable|toggle]' . "\n" .
-    '  %1$s -d <rule_desc> <nat|filter> [enable|disable|toggle]' . "\n",
+  $helptext = sprintf('list rules:' . PHP_EOL .
+    '  %1$s -l' . PHP_EOL .
+    'modify rules:' . PHP_EOL .
+    '  %1$s <ruleid>[,ruleid...] [enable|disable|toggle]' . PHP_EOL .
+    '  %1$s -d <rule_desc> <nat|filter> [enable|disable|toggle]' . PHP_EOL,
     basename(__FILE__)
   );
   print($helptext);

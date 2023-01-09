@@ -13,6 +13,7 @@ fetch https://raw.githubusercontent.com/luckman212/pf_fwrule_toggle/main/fwrule_
 - prefixing the ruleIDs with `n` e.g. `n3` will operate on NAT rule #3
 - optionally set the action to `enable`, `disable`, or `toggle` (if not specified, it defaults to `toggle`)
 - you can use the following long args instead, if you prefer: `--list`, `--desc`, `--help`
+- if you place the script in your `$PATH` somewhere, e.g. `/root/bin/` and make it executable (`chmod +x /root/bin/fwrule_toggle.php`) then you can call the script directly, without prefixing with `php -q`
 
 # Usage
 
