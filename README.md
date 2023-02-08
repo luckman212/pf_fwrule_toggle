@@ -33,7 +33,7 @@ php -q fwrule_toggle.php -d <rule_desc> [type] [action]
 ```
 - `type` can be `nat` or `filter`—if omitted, defaults to filter
 - if the description contains spaces, you must surround it with quotes e.g. `'my fancy rule'`
-- **N.B.** if you want to specify an `action`, you *must* also specify a `type` (See #3)
+- **N.B.** if you want to specify an `action`, you *must* also specify a `type` (See [#3][1])
 
 # Examples
 
@@ -68,3 +68,6 @@ php -q fwrule_toggle.php -d 'external access' filter disable
 - https://www.reddit.com/r/PFSENSE/comments/usdlaf/anybody_have_a_shell_script_to_disableenable_a/
 - https://forum.netgate.com/topic/51063/enable-disable-existing-rule-via-script/
 - https://forum.netgate.com/topic/172552/list-or-toggle-rules-on-off-via-cli
+
+
+[1]: https://github.com/luckman212/pf_fwrule_toggle/issues/3
