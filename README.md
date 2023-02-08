@@ -33,6 +33,7 @@ php -q fwrule_toggle.php -d <rule_desc> [type] [action]
 ```
 - `type` can be `nat` or `filter`—if omitted, defaults to filter
 - if the description contains spaces, you must surround it with quotes e.g. `'my fancy rule'`
+- **N.B.** if you want to specify an `action`, you *must* also specify a `type` (See #3)
 
 # Examples
 
