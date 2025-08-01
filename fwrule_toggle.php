@@ -8,7 +8,7 @@
 
 require_once("config.inc");
 require_once("filter.inc");
-parse_config(true);
+
 $eids = array();
 $dids = array();
 $iids = array();
@@ -18,7 +18,8 @@ function show_help() {
     '  %1$s -l' . PHP_EOL .
     'modify rules:' . PHP_EOL .
     '  %1$s <ruleid>[,ruleid...] [enable|disable|toggle]' . PHP_EOL .
-    '  %1$s -d <rule_desc> <nat|filter> [enable|disable|toggle]' . PHP_EOL,
+    '  %1$s -d <rule_desc> <nat|filter> [enable|disable|toggle]' . PHP_EOL .
+    '  (prefix ruleid with `n` to operate on NAT rules)' . PHP_EOL,
     basename(__FILE__)
   );
   print($helptext);
@@ -26,21 +27,16 @@ function show_help() {
 }
 
 function rule_id_from_desc($desc, $type): array {
-  global $config;
   $matched_ids = array();
   if (strlen($type) == 0) {
     $type = 'filter';
-  }  
+  }
   printf("looking for %s rules named `%s`\n", $type, $desc);
-  $rules = $config[$type]['rule'];
+  $rules = config_get_path("{$type}/rule", []);
   foreach ($rules as $id => $rule) {
     // printf("processing a %s rule, id:%s if:%s desc:%s\n", $type, $id, $rule['interface'], $rule['descr']);
-    if ($rule['descr'] == $desc) {
-      if ($type == 'nat') {
-        $matched_ids[] = sprintf("n%d", $id);
-      } else {
-        $matched_ids[] = $id;
-      }
+    if ($rule['descr'] === $desc) {
+      $matched_ids[] = ($type === 'nat') ? "n$id" : "$id";
     }
   }
   return $matched_ids;
@@ -49,7 +45,7 @@ function rule_id_from_desc($desc, $type): array {
 function validate_rule_ids($rule_ids) {
   foreach ($rule_ids as $id) {
     $id_test = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
-    if ( !(ctype_digit($id_test)) || intval($id_test) < 0 ) {
+    if (!ctype_digit($id_test) || intval($id_test) < 0) {
       print("invalid rule id: {$id}\n");
       return false;
     }
@@ -67,38 +63,35 @@ function process_all_rules($rule_ids, $action) {
 }
 
 function process_rule($oid, $action) {
-  global $config, $eids, $dids, $iids;
+  global $eids, $dids, $iids;
   $oid = trim($oid);
-  if (strlen($oid) == 0) {
+  if ($oid === '') {
     return false;
   }
-  if (!isset($action)) {
-    $action = 'toggle';
-  }
-  if (strpos($oid, 'n') === 0) {
-    $rtype = 'nat';
-  } else {
-    $rtype = 'filter';
-  }
+  $action = $action ?? 'toggle';
+  $rtype = (strpos($oid, 'n') === 0) ? 'nat' : 'filter';
   $id = filter_var($oid, FILTER_SANITIZE_NUMBER_INT);
-  $rule = &$config[$rtype]['rule'][$id];
-  if (!isset($rule)) {
+  $rule_path = "{$rtype}/rule/{$id}";
+  $rule = config_get_path($rule_path, null);
+  if ($rule === null) {
     printf("rule %s does not exist on this system\n", $oid);
     return false;
   }
-  if ($action == 'toggle') {
-    $action = (isset($rule['disabled']) ? 'enable' : 'disable');
+  $is_disabled = config_path_enabled($rule_path, "disabled");
+  $err = '';
+  if ($action === 'toggle') {
+    $action = $is_disabled ? 'enable' : 'disable';
   }
   switch ($action) {
     case 'enable':
-      if (isset($rule['disabled'])) {
-        unset($rule['disabled']);
+      if ($is_disabled) {
+        config_del_path("{$rule_path}/disabled");
         $eids[] = $oid;
       }
       break;
     case 'disable':
-      if (!isset($rule['disabled'])) {
-        $rule['disabled'] = true;
+      if (!$is_disabled) {
+        config_set_path("{$rule_path}/disabled", true);
         $dids[] = $oid;
       }
       break;
@@ -114,7 +107,7 @@ switch ($argv[1]) {
   case '-d':
   case '--desc':
     $desc = trim($argv[2]);
-    if (strlen($desc) == 0) {
+    if ($desc === '') {
       print("description cannot be blank\n");
       show_help();
     }
@@ -122,26 +115,26 @@ switch ($argv[1]) {
     $action = $argv[4];
     if (count($rule_ids) > 0) {
       printf("matched ids: %s\n", implode(',', $rule_ids));
-      process_all_rules($rule_ids, $argv[4]);
+      process_all_rules($rule_ids, $action);
     } else {
       print("no matching rules found\n");
     }
     break;
   case '-l':
   case '--list':
-    $rules = $config['filter']['rule'];
-    $natrules = $config['nat']['rule'];
+    $rules = config_get_path('filter/rule', []);
+    $natrules = config_get_path('nat/rule', []);
     if (count($rules) > 0) {
-      printf("[%s]\n", "Standard (filter) rules, *=disabled");
+      echo "[Standard (filter) rules, *=disabled]\n";
       foreach ($rules as $id => $rule) {
-        $stat = (isset($rule['disabled']) ? '*' : ' ');
+        $stat = isset($rule['disabled']) ? '*' : ' ';
         printf("%4d %s %s (%s)\n", $id, $stat, $rule['interface'], $rule['descr']);
       }
     }
     if (count($natrules) > 0) {
-      printf("[%s] (%s)\n", "NAT rules", "iface/desc, *=disabled");
+      echo "[NAT rules] (iface/desc, *=disabled)\n";
       foreach ($natrules as $id => $rule) {
-        $stat = (isset($rule['disabled']) ? '*' : ' ');
+        $stat = isset($rule['disabled']) ? '*' : ' ';
         printf("%4d %s %s (%s)\n", $id, $stat, $rule['interface'], $rule['descr']);
       }
     }
@@ -150,7 +143,7 @@ switch ($argv[1]) {
   case '--help':
     show_help();
   default:
-    if (strlen($argv[1]) == 0) {
+    if (strlen($argv[1]) === 0) {
       show_help();
     }
     $rule_ids = explode(',', $argv[1]);
@@ -161,14 +154,14 @@ switch ($argv[1]) {
 
 if ((count($eids) + count($dids)) > 0) {
   $msg = "ruleset updated,";
-  if (count($eids)>0) {
-    $msg .= sprintf(" enabled:[%s]", implode(',', $eids));
+  if (count($eids) > 0) {
+    $msg .= " enabled:[" . implode(',', $eids) . "]";
   }
-  if (count($dids)>0) {
-    $msg .= sprintf(" disabled:[%s]", implode(',', $dids));
+  if (count($dids) > 0) {
+    $msg .= " disabled:[" . implode(',', $dids) . "]";
   }
-  if (count($iids)>0) {
-    $msg .= sprintf(" ignored:[%s]", implode(',', $iids));
+  if (count($iids) > 0) {
+    $msg .= " ignored:[" . implode(',', $iids) . "]";
   }
   filter_configure();
   write_config($msg);
